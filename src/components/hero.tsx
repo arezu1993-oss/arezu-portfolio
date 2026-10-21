@@ -34,7 +34,7 @@ export function Hero() {
         {/* ۲. قاب تصویر استاتیک، سریع و باوقار (نسبت سینمایی کشیده) */}
         <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-lg sm:aspect-[18/9] lg:aspect-[21/9] sm:rounded-3xl">
           <Image
-            src="/images/kashan.jpg"
+            src="/images/kashan.png"
             alt="آرزو نعمتی - خانه عامری‌ها کاشان"
             fill
             priority
