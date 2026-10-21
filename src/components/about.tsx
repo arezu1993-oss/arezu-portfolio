@@ -1,308 +1,314 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  motion,
-  useInView,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
-import {
-  SiNextdotjs,
-  SiReact,
-  SiTailwindcss,
-  SiTypescript,
-} from "react-icons/si";
+  PackageCheck,
+  Code2,
+  CheckCircle2,
+  Sparkles,
+  Layers,
+  Cpu,
+  Clock,
+  ShieldCheck,
+  Compass,
+  ArrowDownRight,
+} from "lucide-react";
 
-const statement = [
-  { t: "من" },
-  { t: "وب" },
-  { t: "را" },
-  { t: "می‌سازم؛", accent: true },
-  { t: "سریع،" },
-  { t: "تمیز" },
-  { t: "و" },
-  { t: "ماندگار.", accent: true },
+interface Metric {
+  num: string;
+  enLabel: string;
+  title: string;
+  desc: string;
+  icon: React.ElementType;
+}
+
+const metrics: Metric[] = [
+  {
+    num: "+۸ سال",
+    enLabel: "DISCIPLINE",
+    title: "انضباط در نشر و توزیع",
+    desc: "حل مسئله در بازار واقعی؛ حساسیت شدید به زمان‌بندی و دلیوری بدون تاخیر.",
+    icon: Clock,
+  },
+  {
+    num: "۱۰۰٪",
+    enLabel: "STRUCTURE",
+    title: "معماری تایپ‌سیف و سمانتیک",
+    desc: "کد تمیز و ساختارمند با TypeScript که فردا هم نگهداری آن لذت‌بخش است.",
+    icon: ShieldCheck,
+  },
+  {
+    num: "ریموت",
+    enLabel: "AUTONOMOUS",
+    title: "ارتباط شفاف و مستقیم",
+    desc: "گزارش منظم، درک عمیق محصول و تعهد در اسپرینت‌ها بدون نیاز به پیگیری مداوم.",
+    icon: Compass,
+  },
 ];
 
-const code = [
-  "const arezoo = {",
-  '  role: "Frontend Developer",',
-  '  stack: ["Next.js", "Tailwind"],',
-  '  focus: "fast & beautiful",',
-  "};",
-].join("\n");
-
-const stack = [
-  { name: "Next.js", icon: SiNextdotjs },
-  { name: "React", icon: SiReact },
-  { name: "Tailwind", icon: SiTailwindcss },
-  { name: "TypeScript", icon: SiTypescript },
+const dualityModes = [
+  {
+    id: "web",
+    title: "مهندسی در وب مدرن",
+    badge: "CURRENT FOCUS",
+    subtitle: "توسعه فرانت‌اند با معماری مدرن React و Next.js",
+    icon: Code2,
+    points: [
+      "توسعه ساختاریافته و ماژولار با Next.js 15 و استراتژی App Router",
+      "رابط کاربری سبک، بهینه و بدون حتی یک فریم لگ در اسکرول موبایل (Tailwind v4)",
+      "تضمین پایداری کامپوننت‌ها با TypeScript سخت‌گیرانه و دسترس‌پذیری کامل (a11y)",
+    ],
+  },
+  {
+    id: "publishing",
+    title: "ریشه در زنجیره نشر و توزیع",
+    badge: "BACKGROUND",
+    subtitle: "۸ سال تجربه مستقیم با ده‌ها هزار داده و حساسیت توزیع",
+    icon: PackageCheck,
+    points: [
+      "مدیریت داده‌های پیچیده و فهرست‌بندی کالاها با صفر درصد خطا در ساختار",
+      "احترام عمیق به گرید ادیتوریال، فواصل، چشم مخاطب و خوانایی متن",
+      "درک ارزش زمان در کسب‌وکار: قول تحویل یعنی تحویلِ به‌موقع",
+    ],
+  },
 ];
 
-const steps = [
-  { n: "۱", title: "شناخت", desc: "هدف و مخاطب را می‌فهمم." },
-  { n: "۲", title: "طراحی", desc: "ساده، خوانا، هماهنگ با برند." },
-  { n: "۳", title: "توسعه", desc: "کد تمیز، سریع و ریسپانسیو." },
-  { n: "۴", title: "تحویل", desc: "انتشار و پشتیبانی بعد از لانچ." },
+const techSpecs = [
+  {
+    category: "Framework",
+    name: "Next.js 15",
+    sub: "App Router / SSR",
+  },
+  {
+    category: "Language",
+    name: "TypeScript",
+    sub: "Strict Type Safety",
+  },
+  {
+    category: "Styling",
+    name: "Tailwind v4",
+    sub: "Zero-runtime CSS",
+  },
+  {
+    category: "Core",
+    name: "React 19",
+    sub: "Server Components",
+  },
+  {
+    category: "Primitives",
+    name: "Radix UI",
+    sub: "Accessible Headless",
+  },
+  {
+    category: "VCS",
+    name: "Git & GitHub",
+    sub: "Clean Commits Flow",
+  },
 ];
 
-function Word({
-  text,
-  accent,
-  progress,
-  range,
-}: {
-  text: string;
-  accent?: boolean;
-  progress: MotionValue<number>;
-  range: [number, number];
-}) {
-  const opacity = useTransform(progress, range, [0.12, 1]);
-  return (
-    <motion.span
-      style={{ opacity, color: accent ? "var(--color-accent)" : undefined }}
-      className="mx-[0.14em] inline-block"
-    >
-      {text}
-    </motion.span>
-  );
-}
+export default function AboutSection() {
+  const [activeTab, setActiveTab] = useState<"web" | "publishing">("web");
 
-function Statement() {
-  const ref = useRef<HTMLHeadingElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.85", "end 0.5"],
-  });
-  return (
-    <h2
-      ref={ref}
-      className="mx-auto max-w-4xl text-center text-4xl font-black leading-[1.6] sm:text-5xl lg:text-6xl"
-    >
-      {statement.map((w, i) => (
-        <Word
-          key={i}
-          text={w.t}
-          accent={w.accent}
-          progress={scrollYProgress}
-          range={[i / statement.length, (i + 1) / statement.length]}
-        />
-      ))}
-    </h2>
-  );
-}
-
-function Highlight({ text }: { text: string }) {
-  return (
-    <>
-      {text.split("\n").map((line, i, arr) => (
-        <span key={i}>
-          {line.split(/("[^"]*"?)/).map((part, j) => (
-            <span
-              key={j}
-              style={{ color: part.startsWith('"') ? "#C4B5FD" : "#E7E3F0" }}
-            >
-              {part}
-            </span>
-          ))}
-          {i < arr.length - 1 && "\n"}
-        </span>
-      ))}
-    </>
-  );
-}
-
-function CodeTyper() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!inView || count >= code.length) return;
-    const t = setTimeout(() => setCount((c) => c + 1), 26);
-    return () => clearTimeout(t);
-  }, [inView, count]);
-
-  return (
-    <div ref={ref}>
-      <pre
-        dir="ltr"
-        className="min-h-[8.5rem] whitespace-pre-wrap text-left font-mono text-xs leading-7 sm:text-sm"
-      >
-        <code>
-          <Highlight text={code.slice(0, count)} />
-        </code>
-        <span
-          className="cursor-blink ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px]"
-          style={{ backgroundColor: "#C4B5FD" }}
-        />
-      </pre>
-    </div>
-  );
-}
-
-function Marquee() {
-  const items = [...stack, ...stack, ...stack, ...stack];
-  return (
-    <div
-      dir="ltr"
-      className="relative overflow-hidden py-4"
-      style={{
-        maskImage:
-          "linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent)",
-        WebkitMaskImage:
-          "linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent)",
-      }}
-    >
-      <motion.div
-        className="flex w-max gap-14"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 28, ease: "linear", repeat: Infinity }}
-      >
-        {items.map((s, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-3 text-lg font-black opacity-70 transition-opacity hover:opacity-100"
-          >
-            <s.icon
-              className="h-6 w-6"
-              style={{ color: "var(--color-accent)" }}
-            />
-            {s.name}
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  );
-}
-
-export function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden px-5 py-24 sm:py-32"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto"
     >
-      {/* هاله‌های نورانی */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute -top-20 right-[-8rem] h-[26rem] w-[26rem] rounded-full blur-[110px]"
-        style={{ backgroundColor: "rgba(155,135,245,0.28)" }}
-        animate={{ y: [0, 40, 0], x: [0, -30, 0] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-[-8rem] h-[24rem] w-[24rem] rounded-full blur-[110px]"
-        style={{ backgroundColor: "rgba(240,171,252,0.28)" }}
-        animate={{ y: [0, -40, 0], x: [0, 30, 0] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <div className="relative mx-auto max-w-5xl">
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mb-6 text-center text-sm font-bold tracking-wide"
-          style={{ color: "var(--color-muted-foreground)" }}
-        >
-          درباره من
-        </motion.p>
-
-        <Statement />
-
-        {/* کارت کد با حاشیهٔ درخشان */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mx-auto mt-20 max-w-xl"
-        >
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="rounded-[1.75rem] p-px shadow-[0_40px_80px_-30px_rgba(155,135,245,0.55)]"
-            style={{
-              background:
-                "linear-gradient(135deg, #9B87F5, rgba(155,135,245,0.1) 40%, #F0ABFC)",
-            }}
-          >
-            <div
-              className="rounded-[1.7rem] p-6 sm:p-8"
-              style={{ backgroundColor: "#1E1B24" }}
-            >
-              <div dir="ltr" className="mb-5 flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#FF6B6B]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#FFD166]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#6BCB77]" />
-                <span className="ms-auto font-mono text-xs text-white/40">
-                  about.ts
-                </span>
-              </div>
-              <CodeTyper />
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* ابزارها */}
-        <div className="mt-16">
-          <Marquee />
+      {/* هدر بخش: ترکیب هماهنگ ادیتوریال و مدرن */}
+      <div className="max-w-2xl mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono tracking-wider text-amber-900 dark:text-amber-300 bg-amber-500/10 border border-amber-600/20 mb-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-amber-400" />
+          <span>شناسنامه کاری • ۰۲</span>
         </div>
 
-        {/* روند کار */}
-        <div className="mt-24 sm:mt-28">
-          <h3 className="mb-14 text-center text-2xl font-black sm:text-3xl">
-            روند <span style={{ color: "var(--color-accent)" }}>کار</span>
-          </h3>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-stone-900 dark:text-stone-100 tracking-tight leading-tight mb-4">
+          دقت در ساختار، ظرافت در اجرا
+        </h2>
 
-          <div className="relative grid gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-            <motion.div
-              aria-hidden
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.6, ease: "easeOut" }}
-              className="absolute inset-x-0 top-[3.4rem] hidden h-px origin-right lg:block"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, rgba(155,135,245,0.6), transparent)",
-              }}
-            />
-            {steps.map((s, i) => (
-              <motion.div
-                key={s.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15, duration: 0.7 }}
-                className="group text-center lg:text-start"
-              >
-                <div
-                  className="text-8xl font-black leading-none transition-transform duration-500 group-hover:-translate-y-2"
-                  style={{
-                    color: "transparent",
-                    WebkitTextStroke: "1.5px rgba(155,135,245,0.55)",
-                  }}
-                >
-                  {s.n}
+        <p className="text-sm sm:text-base text-stone-600 dark:text-stone-400 leading-relaxed font-normal">
+          من معتقدم یک وب‌سایت خوب حاصل ترکیب نظم داده‌ها و زیبایی بصری است.
+          سال‌ها کار در زنجیره کتاب، وسواس روی خوانایی و ساختار را در من نهادینه
+          کرده؛ چیزی که امروز مستقیماً به کدهای فرانت‌اند منتقل می‌کنم.
+        </p>
+      </div>
+
+      {/* ۱. کارت‌های متریک: منسجم، بالانس‌شده و با تنفس بصری مناسب */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
+        {metrics.map((item, idx) => {
+          const IconComp = item.icon;
+          return (
+            <div
+              key={idx}
+              className="p-6 rounded-2xl bg-stone-50/80 dark:bg-stone-900/40 border border-stone-200/90 dark:border-stone-800/80 hover:border-amber-500/40 transition-all duration-200 flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-400/10 border border-amber-600/15 flex items-center justify-center text-amber-800 dark:text-amber-400">
+                    <IconComp className="w-5 h-5" />
+                  </div>
+                  <span
+                    dir="ltr"
+                    className="text-[10px] font-mono tracking-widest text-stone-600 dark:text-stone-300 font-semibold uppercase"
+                  >
+                    {item.enLabel}
+                  </span>
                 </div>
-                <h4 className="mt-5 text-lg font-black">{s.title}</h4>
-                <p
-                  className="mt-1 text-sm"
-                  style={{ color: "var(--color-muted-foreground)" }}
-                >
-                  {s.desc}
-                </p>
-              </motion.div>
-            ))}
+
+                <div className="text-3xl sm:text-4xl font-black font-mono text-stone-900 dark:text-stone-100 mb-2">
+                  {item.num}
+                </div>
+
+                <h3 className="text-sm font-bold text-stone-900 dark:text-stone-200 mb-2">
+                  {item.title}
+                </h3>
+              </div>
+
+              <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed mt-2 pt-3 border-t border-stone-200/60 dark:border-stone-800/60">
+                {item.desc}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ۲. کنسول مقایسه و تعامل (سویچر دیدگاه) */}
+      <div className="rounded-2xl sm:rounded-3xl bg-stone-100/60 dark:bg-stone-900/30 border border-stone-200/90 dark:border-stone-800 p-5 sm:p-8 mb-12">
+        {/* نوار کنترل بالای کنسول */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200/80 dark:border-stone-800">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-600 dark:bg-amber-400" />
+            <span className="text-xs font-mono uppercase tracking-wider text-stone-600 dark:text-stone-400 font-semibold">
+              پشتوانه اجرایی و رویکرد
+            </span>
           </div>
+
+          {/* تب‌ها */}
+          <div className="inline-flex p-1 rounded-xl bg-stone-200/70 dark:bg-stone-800 border border-stone-300/50 dark:border-stone-700 self-start sm:self-auto">
+            <button
+              onClick={() => setActiveTab("web")}
+              className={`px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                activeTab === "web"
+                  ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-white shadow-xs font-bold"
+                  : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+              }`}
+            >
+              مهندسی وب فعلی
+            </button>
+            <button
+              onClick={() => setActiveTab("publishing")}
+              className={`px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                activeTab === "publishing"
+                  ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-white shadow-xs font-bold"
+                  : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+              }`}
+            >
+              ریشه در نشر و توزیع
+            </button>
+          </div>
+        </div>
+
+        {/* محتوای فعال سویچر */}
+        <div className="pt-6">
+          <AnimatePresence mode="wait">
+            {dualityModes
+              .filter((m) => m.id === activeTab)
+              .map((item) => {
+                const IconComp = item.icon;
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center"
+                  >
+                    {/* ستون راست: عنوان و آیکون */}
+                    <div className="lg:col-span-5 space-y-2.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-xl bg-amber-600/10 dark:bg-amber-400/10 border border-amber-600/20 flex items-center justify-center text-amber-800 dark:text-amber-400 shrink-0">
+                          <IconComp className="w-5 h-5" />
+                        </div>
+                        <span
+                          dir="ltr"
+                          className="text-[10px] font-mono tracking-widest px-2.5 py-0.5 rounded-md bg-stone-200/70 dark:bg-stone-800 text-stone-600 dark:text-stone-300 font-semibold"
+                        >
+                          {item.badge}
+                        </span>
+                      </div>
+                      <h4 className="text-lg sm:text-xl font-extrabold text-stone-900 dark:text-stone-100">
+                        {item.title}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                        {item.subtitle}
+                      </p>
+                    </div>
+
+                    {/* ستون چپ: بالت‌های تمیز و اسکن‌پذیر */}
+                    <div className="lg:col-span-7 space-y-2.5">
+                      {item.points.map((point, pIdx) => (
+                        <div
+                          key={pIdx}
+                          className="flex items-start gap-3 p-3.5 rounded-xl bg-white/90 dark:bg-stone-800/80 border border-stone-200/70 dark:border-stone-700/60 shadow-2xs"
+                        >
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                          <span className="text-xs sm:text-sm text-stone-800 dark:text-stone-200 leading-relaxed font-normal">
+                            {point}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                );
+              })}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* ۳. چیپ‌های مشخصات مهندسی (کامپکت، LTR دقیق و بهینه برای موبایل) */}
+      <div className="p-5 sm:p-7 rounded-2xl bg-white/60 dark:bg-stone-900/30 border border-stone-200/90 dark:border-stone-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 mb-5 border-b border-stone-200/70 dark:border-stone-800">
+          <div className="flex items-center gap-2">
+            <Cpu className="w-4 h-4 text-stone-500" />
+            <span
+              dir="ltr"
+              className="text-xs font-mono font-semibold text-stone-700 dark:text-stone-300 uppercase tracking-wider"
+            >
+              TECHNICAL SPECIFICATIONS
+            </span>
+          </div>
+          <span
+            dir="ltr"
+            className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-600/20 self-start sm:self-auto font-medium"
+          >
+            ● Core Web Vitals Ready
+          </span>
+        </div>
+
+        {/* گرید چیپ‌ها با چیدمان صریح LTR از چپ به راست */}
+        <div
+          dir="ltr"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-left"
+        >
+          {techSpecs.map((chip, cIdx) => (
+            <div
+              key={cIdx}
+              className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/60 hover:border-amber-600/30 transition-colors"
+            >
+              <div className="text-[10px] font-mono text-amber-800 dark:text-amber-400 font-semibold uppercase tracking-wider mb-1">
+                {chip.category}
+              </div>
+              <div className="text-xs font-bold font-mono text-stone-900 dark:text-stone-100 truncate mb-0.5">
+                {chip.name}
+              </div>
+              <div className="text-[10px] text-stone-600 dark:text-stone-300 truncate">
+                {chip.sub}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
-
-export default About;

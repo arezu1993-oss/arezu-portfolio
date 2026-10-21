@@ -1,220 +1,186 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
-import {
-  FiArrowLeft,
-  FiGithub,
-  FiHeart,
-  FiMail,
-  FiPhone,
-} from "react-icons/fi";
-import { FaInstagram, FaLinkedinIn, FaTelegramPlane } from "react-icons/fa";
+import { ArrowUp, ArrowUpLeft, Mail, Send } from "lucide-react";
 
-// ===== اطلاعات تماس و هویت =====
-const CONTACT = {
-  name: "آرزو نعمتی",
-  phone: "+989351465780",
-  phoneFa: "۰۹۳۵ ۱۴۶ ۵۷۸۰",
-  email: "arezufrontend.developer@gmail.com",
-};
-
-// ===== شبکه‌های اجتماعی (فقط آیکون، بدون برچسب) =====
-const socials = [
-  {
-    name: "Telegram",
-    href: "https://t.me/+989351465780",
-    Icon: FaTelegramPlane,
-  },
-  {
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/in/arezoo-nemati",
-    Icon: FaLinkedinIn,
-  },
-  {
-    name: "Instagram",
-    href: "https://www.instagram.com/arezu_design25",
-    Icon: FaInstagram,
-  },
-  { name: "GitHub", href: "https://github.com/arezu1993-oss", Icon: FiGithub },
-];
-
-// ===== لینک‌های دسترسی سریع (همان منوی صفحه) =====
-const navLinks = [
-  { label: "درباره من", href: "#about" },
-  { label: "نمونه‌کارها", href: "#projects" },
-  { label: "تماس", href: "#contact" },
-];
-
-// ===== انیمیشن ورود مشترک =====
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
-});
-
-// ===== عنوان ستون =====
-function ColumnTitle({ children }: { children: React.ReactNode }) {
+function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
-    <div className="mb-6 flex items-center gap-3">
-      <span className="h-px w-6 bg-[oklch(90%_0.06_340)]" />
-      <h4 className="text-sm font-black tracking-wide text-white/90">
-        {children}
-      </h4>
-    </div>
+    <svg
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+      <path d="M9 18c-4.51 2-5-2-7-2" />
+    </svg>
+  );
+}
+
+function LinkedinIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect width="4" height="12" x="2" y="9" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
   );
 }
 
 export default function Footer() {
-  // اسکرول نرم برای لینک‌های داخلی
-  const handleScroll = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    href: string,
-  ) => {
-    e.preventDefault();
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+  const scrollToTop = () => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
     <footer
-      role="contentinfo"
-      className="relative overflow-hidden text-white bg-gradient-to-b from-[oklch(55%_0.10_290)] to-[oklch(44%_0.09_300)]"
+      dir="rtl"
+      className="relative bg-[#faf8f5] text-stone-800 pt-20 pb-14 border-t border-stone-200/90 font-sans"
     >
-      {/* لکه‌های نور ثابت و محو (بدون انیمیشن سنگین) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full bg-[oklch(90%_0.06_340)] opacity-20 blur-[100px]" />
-        <div className="absolute bottom-0 right-1/5 h-80 w-80 rounded-full bg-[oklch(80%_0.10_300)] opacity-20 blur-[110px]" />
-        {/* الگوی نقطه‌ای بسیار ظریف */}
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-      </div>
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* بخش اصلی فوتر */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 pb-16 items-start">
+          {/* ستون راست: تیتر و بیانیه بدون لوگوی زاید A */}
+          <div className="lg:col-span-6 space-y-6">
+            {/* نشانگر زنده وضعیت کاری (جایگزین تمیز و مدرن جعبه قبلی) */}
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-stone-200 bg-stone-100/80 px-3.5 py-1.5 text-xs text-stone-700 shadow-2xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
+              </span>
+              <span className="font-medium">
+                آماده برای فرصت‌های ریموت و پروژه‌های جدید
+              </span>
+            </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-10 pt-24">
-        {/* ===== تیتر و CTA (وسط‌چین) ===== */}
-        <motion.div
-          {...fadeUp()}
-          className="mx-auto mb-20 max-w-3xl text-center"
-        >
-          
-          <h2 className="text-3xl font-black leading-snug md:text-5xl">
-            هر ایده بزرگ با یک گفتگو شروع میشه
-          </h2>
-          <p className="mt-4 text-lg font-bold text-white/75 md:text-xl">
-            پس بیاین با هم ایده‌هاتونو واقعی کنیم
-          </p>
-
-          <motion.a
-            href="#contact"
-            onClick={(e) => handleScroll(e, "#contact")}
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ duration: 0.3 }}
-            className="mt-10 inline-flex items-center gap-3 rounded-full bg-white px-9 py-4 font-black text-[oklch(40%_0.09_295)] shadow-[0_18px_40px_-12px_rgba(40,20,80,0.45)] transition-shadow duration-300 hover:shadow-[0_22px_50px_-10px_rgba(40,20,80,0.55)]"
-          >
-            درخواست مشاوره رایگان  
-            <FiArrowLeft className="text-lg" />
-          </motion.a>
-        </motion.div>
-
-        {/* ===== سه ستون ===== */}
-        <div className="grid grid-cols-1 gap-14 md:grid-cols-3 md:gap-10">
-          {/* ستون ۱: هویت */}
-          <motion.div {...fadeUp(0.05)} className="text-center md:text-right">
-            <h3 className="inline-block bg-gradient-to-l from-white to-[oklch(90%_0.06_340)] bg-clip-text text-3xl font-black text-transparent">
-              {CONTACT.name}
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-stone-900 leading-snug tracking-tight">
+              پایان این صفحه، <br />
+              <span className="text-stone-400 font-bold">
+                شروع همکاری بعدی ماست.
+              </span>
             </h3>
-            <p className="mx-auto mt-4 max-w-xs text-sm leading-7 text-white/70 md:mx-0">
-              توسعه‌دهنده فرانت‌اند با علاقه به طراحی‌های مدرن و تجربه کاربری
-              روان.
-            </p>
-          </motion.div>
 
-          {/* ستون ۲: دسترسی سریع */}
-          <motion.div {...fadeUp(0.15)} className="text-center md:text-right">
-            <ColumnTitle>دسترسی سریع</ColumnTitle>
-            <nav className="flex flex-col gap-3">
-              {navLinks.map((link) => (
+            <p className="text-stone-600 text-sm sm:text-base leading-relaxed max-w-lg">
+              اگر ایده‌ای برای توسعه دارید، به دنبال بازطراحی رابط کاربری هستید
+              یا می‌خواهید درباره موقعیت شغلی گفتگو کنیم، مشتاق شنیدنم.
+            </p>
+          </div>
+
+          {/* ستون وسط: مسیرهای کلیدی وبگاه */}
+          <div className="lg:col-span-2 lg:pr-6 space-y-4 pt-2">
+            <span className="text-[11px] font-mono font-bold tracking-widest text-stone-400 uppercase">
+              مسیرهای وبگاه
+            </span>
+            <ul className="space-y-3">
+              {[
+                { label: "پروژه‌ها و کارها", href: "#projects" },
+                { label: "درباره و پیشینه", href: "#about" },
+                { label: "مهارت‌ها و ابزارها", href: "#skills" },
+                { label: "فرم تماس مستقیم", href: "#contact" },
+              ].map((item, idx) => (
+                <li key={idx}>
+                  <a
+                    href={item.href}
+                    className="group inline-flex items-center gap-2 text-sm text-stone-600 hover:text-stone-950 transition-colors"
+                  >
+                    <span className="h-1 w-1 rounded-full bg-stone-300 group-hover:bg-amber-600 group-hover:scale-125 transition-all" />
+                    <span>{item.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ستون چپ: کارت‌های ارتباطی منسجم */}
+          <div className="lg:col-span-4 lg:pr-6 space-y-4 pt-2">
+            <span className="text-[11px] font-mono font-bold tracking-widest text-stone-400 uppercase">
+              شبکه‌ها و راه‌های ارتباط
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
+              {[
+                {
+                  label: "ارسال ایمیل مستقیم",
+                  href: "mailto:arezufrontend.developer@gmail.com",
+                  icon: <Mail className="w-4 h-4" />,
+                },
+                {
+                  label: "پروفایل لینکدین",
+                  href: "https://linkedin.com",
+                  icon: <LinkedinIcon className="w-4 h-4" />,
+                },
+                {
+                  label: "ریپازیتوری‌های گیت‌هاب",
+                  href: "https://github.com",
+                  icon: <GithubIcon className="w-4 h-4" />,
+                },
+                {
+                  label: "پیام در تلگرام",
+                  href: "https://t.me",
+                  icon: <Send className="w-4 h-4" />,
+                },
+              ].map((item, idx) => (
                 <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleScroll(e, link.href)}
-                  className="group inline-flex items-center justify-center gap-2 text-white/75 transition-colors duration-300 hover:text-white"
+                  key={idx}
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex items-center justify-between rounded-xl border border-stone-200/90 bg-white/80 px-4 py-2.5 shadow-2xs hover:border-stone-400 hover:bg-white transition-all"
                 >
-                  <span className="h-px w-0 bg-white transition-all duration-300 group-hover:w-5" />
-                  {link.label}
+                  <div className="flex items-center gap-3">
+                    <span className="text-stone-400 group-hover:text-amber-700 transition-colors">
+                      {item.icon}
+                    </span>
+                    <span className="text-xs font-medium text-stone-700 group-hover:text-stone-900">
+                      {item.label}
+                    </span>
+                  </div>
+                  <ArrowUpLeft className="w-3.5 h-3.5 text-stone-300 group-hover:text-stone-800 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
               ))}
-            </nav>
-          </motion.div>
-
-          {/* ستون ۳: ارتباط */}
-          <motion.div {...fadeUp(0.25)} className="text-center md:text-right">
-            <ColumnTitle>ارتباط با من</ColumnTitle>
-
-            <div className="flex flex-col items-center gap-4 md:items-end">
-              <a
-                href={`tel:${CONTACT.phone}`}
-                className="group inline-flex items-center gap-3 text-white/85 transition-colors hover:text-white"
-              >
-                <span dir="ltr" className="text-sm font-semibold">
-                  {CONTACT.phoneFa}
-                </span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 transition-colors group-hover:bg-white/20">
-                  <FiPhone />
-                </span>
-              </a>
-
-              <a
-                href={`mailto:${CONTACT.email}`}
-                className="group inline-flex items-center gap-3 text-white/85 transition-colors hover:text-white"
-              >
-                <span dir="ltr" className="break-all text-sm font-semibold">
-                  {CONTACT.email}
-                </span>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 transition-colors group-hover:bg-white/20">
-                  <FiMail />
-                </span>
-              </a>
             </div>
-
-            {/* شبکه‌های اجتماعی */}
-            <div className="mt-7 flex justify-center gap-3 md:justify-end">
-              {socials.map(({ name, href, Icon }) => (
-                <motion.a
-                  key={name}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={name}
-                  whileHover={{ y: -3 }}
-                  whileTap={{ scale: 0.92 }}
-                  transition={{ duration: 0.25 }}
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-lg ring-1 ring-white/20 backdrop-blur-md transition-colors duration-300 hover:bg-white hover:text-[oklch(40%_0.09_295)]"
-                >
-                  <Icon />
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* ===== نوار پایین ===== */}
-        <motion.div
-          {...fadeUp(0.1)}
-          className="mt-20 flex flex-col items-center justify-between gap-4 border-t border-white/15 pt-8 text-xs text-white/80 md:flex-row"
-        >
-          <p>© ۱۴۰۵ {CONTACT.name}. تمامی حقوق محفوظ است.</p>
-          <p className="inline-flex items-center gap-2">
-            ساخته‌شده با
-            <FiHeart className="text-[oklch(90%_0.06_340)]"/>و Next.js 
-          </p>
-        </motion.div>
+        {/* نوار پایانی: تراز متقارن و ارتقا یافته */}
+        <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-6 pt-8 border-t border-stone-200">
+          {/* کردیت و مشخصات فنی */}
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1 text-xs text-stone-500 font-mono">
+            <span className="font-semibold text-stone-700">AREZOO NEMATI</span>
+            <span>—</span>
+            <span>DEVELOPED WITH NEXT.JS & TAILWIND CSS</span>
+            <span className="hidden sm:inline text-stone-300">•</span>
+            <span>2026</span>
+          </div>
+
+          {/* دکمه بازگشت به بالا بدون حالت شلوغ */}
+          <motion.button
+            type="button"
+            onClick={scrollToTop}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className="group inline-flex items-center gap-2.5 rounded-full border border-stone-300 bg-white px-4 py-1.5 text-xs font-semibold text-stone-700 shadow-2xs hover:border-stone-900 hover:text-stone-950 transition-all cursor-pointer"
+          >
+            <span>بازگشت به بالا</span>
+            <ArrowUp className="h-3.5 w-3.5 text-stone-400 group-hover:text-stone-900 transition-colors" />
+          </motion.button>
+        </div>
       </div>
     </footer>
   );

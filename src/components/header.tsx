@@ -55,7 +55,7 @@ const socials = [
 
 const toFa = (n: number) => n.toLocaleString("fa-IR");
 
-// نقطه شروع دایره منوی موبایل (روی دکمه همبرگر)
+// خاستگاه انیمیشن منوی موبایل
 const CLIP_ORIGIN = "at 44px 42px";
 
 export function Header() {
@@ -65,19 +65,19 @@ export function Header() {
   const [hovered, setHovered] = useState<string | null>(null);
 
   const { scrollY, scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 25 });
+  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 28 });
 
   useMotionValueEvent(scrollY, "change", (y) => {
     setScrolled(y > 20);
-    if (y < 200) setActive("");
+    if (y < 150) setActive("");
   });
 
-  // تشخیص بخش فعال
+  // مانیتور کردن سکشن‌های فعال بر اساس دید اسکرول
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) =>
         entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
-      { rootMargin: "-45% 0px -50% 0px" },
+      { rootMargin: "-35% 0px -55% 0px" },
     );
     links.forEach((l) => {
       const el = document.getElementById(l.id);
@@ -86,7 +86,7 @@ export function Header() {
     return () => observer.disconnect();
   }, []);
 
-  // قفل اسکرول، بستن با Esc و بستن هنگام بزرگ شدن صفحه
+  // کنترل قفل اسکرول و بستن منو
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -107,59 +107,54 @@ export function Header() {
     setOpen(false);
     setTimeout(
       () => {
-        if (id)
+        if (id) {
           document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-        else window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
       },
-      wasOpen ? 350 : 0,
+      wasOpen ? 300 : 0,
     );
   };
 
   return (
     <MotionConfig reducedMotion="user">
       <motion.header
-        initial={{ y: -100, opacity: 0 }}
+        initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-4 md:pt-4"
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:px-6 md:pt-5"
       >
         <div
           className={`relative flex w-full items-center justify-between rounded-full border transition-all duration-500 ${
             scrolled && !open
-              ? "max-w-4xl border-white/60 bg-white/70 py-2 pl-2 pr-4 shadow-[0_10px_40px_-12px_rgba(155,135,245,0.45)] backdrop-blur-xl sm:pr-5"
+              ? "max-w-4xl border-[var(--color-border)] bg-[var(--color-bg)]/85 py-2 pl-2 pr-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md sm:pr-5 dark:border-white/10 dark:bg-[#1a1918]/85"
               : "max-w-6xl border-transparent bg-transparent py-3 pl-3 pr-4 sm:pr-5"
           }`}
         >
-          {/* لوگو */}
+          {/* لوگوتایپ معمارانه و مینیمال */}
           <a
             href="#"
             onClick={(e) => goTo(e)}
-            aria-label="آرزو نعمتی، بازگشت به بالا"
-            className={`group flex items-center text-xl font-black transition-colors sm:text-2xl ${
-              open ? "text-white" : ""
-            }`}
+            aria-label="آرزو نعمتی، صفحه اصلی"
+            className="group flex items-center text-lg font-black tracking-tight text-[var(--color-text)] sm:text-xl"
           >
-            آرزو
-            {/* نام خانوادگی هنگام هاور تایپ می‌شود */}
+            <span className="font-serif">آرزو</span>
             <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-500 ease-out group-hover:grid-cols-[1fr]">
-              <span className="overflow-hidden whitespace-nowrap">
+              <span className="overflow-hidden whitespace-nowrap text-muted-foreground font-normal">
                 &nbsp;نعمتی
               </span>
             </span>
-            {/* مکان‌نمای چشمک‌زن */}
-            <span
-              className="cursor-blink ms-1 inline-block h-[1.1em] w-[3px] rounded-full"
-              style={{ backgroundColor: "var(--color-accent)" }}
-            />
+            <span className="ms-1.5 inline-block h-2 w-2 rounded-full bg-[var(--color-accent)] opacity-85 transition-transform duration-300 group-hover:scale-125" />
           </a>
 
-          {/* منوی دسکتاپ */}
+          {/* منوی مدرن و مینیمال دسکتاپ */}
           <nav
-            className="hidden items-center gap-1 md:flex"
+            className="hidden items-center gap-1 rounded-full border border-[var(--color-border)]/60 bg-[var(--color-card)]/50 px-2 py-1 backdrop-blur-sm md:flex"
             onMouseLeave={() => setHovered(null)}
           >
             {links.map((l) => {
-              const highlighted = (hovered ?? active) === l.id;
+              const isSelected = (hovered ?? active) === l.id;
               return (
                 <a
                   key={l.id}
@@ -167,84 +162,78 @@ export function Header() {
                   onClick={(e) => goTo(e, l.id)}
                   onMouseEnter={() => setHovered(l.id)}
                   aria-current={active === l.id ? "page" : undefined}
-                  className="relative isolate flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-bold transition-colors lg:px-4"
-                  style={{
-                    color: highlighted ? "var(--color-accent)" : undefined,
-                  }}
+                  className={`relative isolate flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                    isSelected
+                      ? "text-[var(--color-accent)] font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  {highlighted && (
+                  {isSelected && (
                     <motion.span
                       layoutId="nav-pill"
-                      className="absolute inset-0 -z-10 rounded-full"
-                      style={{ backgroundColor: "rgba(155,135,245,0.14)" }}
+                      className="absolute inset-0 -z-10 rounded-full bg-[var(--color-sub-accent)]/80 dark:bg-white/10"
                       transition={{
                         type: "spring",
-                        stiffness: 380,
-                        damping: 30,
+                        stiffness: 400,
+                        damping: 32,
                       }}
                     />
                   )}
-                  <l.Icon className="h-4 w-4" />
+                  <l.Icon className="h-3.5 w-3.5" />
                   {l.label}
                 </a>
               );
             })}
           </nav>
 
-          {/* دکمه تماس دسکتاپ */}
+          {/* دکمه ارتباط مستقیم (Call to Action) */}
           <a
             href="#contact"
             onClick={(e) => goTo(e, "contact")}
-            className="group hidden items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow-[0_8px_24px_-8px_rgba(155,135,245,0.9)] transition-transform hover:scale-105 md:inline-flex"
-            style={{ backgroundColor: "var(--color-accent)" }}
+            className="group hidden items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2 text-xs font-semibold text-[var(--color-text)] shadow-xs transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white md:inline-flex"
           >
-            بیا حرف بزنیم
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            <span>شروع گفتگو</span>
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
           </a>
 
-          {/* دکمه همبرگر */}
+          {/* دکمه منوی موبایل با خطوط مینیمال */}
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "بستن منو" : "باز کردن منو"}
-            className="relative flex h-11 w-11 items-center justify-center rounded-full transition-colors md:hidden"
-            style={{
-              backgroundColor: open
-                ? "rgba(255,255,255,0.1)"
-                : "var(--color-accent)",
-            }}
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text)] transition-colors md:hidden"
           >
             <motion.span
-              animate={open ? { rotate: 45, y: 0 } : { rotate: 0, y: -4 }}
-              className="absolute h-0.5 w-5 rounded-full bg-white"
+              animate={open ? { rotate: 45, y: 0 } : { rotate: 0, y: -3.5 }}
+              className="absolute h-[1.5px] w-4.5 rounded-full bg-current"
             />
             <motion.span
               animate={
                 open
-                  ? { rotate: -45, y: 0, width: 20 }
-                  : { rotate: 0, y: 4, width: 14 }
+                  ? { rotate: -45, y: 0, width: 18 }
+                  : { rotate: 0, y: 3.5, width: 12 }
               }
-              className="absolute h-0.5 rounded-full bg-white"
+              className="absolute h-[1.5px] rounded-full bg-current"
             />
           </button>
 
-          {/* نوار پیشرفت اسکرول */}
+          {/* نوار باریک پیشرفت اسکرول با رنگ سفالی */}
           <motion.div
-            className={`absolute inset-x-8 -bottom-px h-0.5 rounded-full transition-opacity duration-500 ${
+            className={`absolute inset-x-6 -bottom-px h-[2px] rounded-full transition-opacity duration-300 ${
               scrolled && !open ? "opacity-100" : "opacity-0"
             }`}
             style={{
               scaleX: progress,
               transformOrigin: "right",
-              background: "linear-gradient(to left, #9B87F5, #F0ABFC)",
+              backgroundColor: "var(--color-accent)",
             }}
           />
         </div>
       </motion.header>
 
-      {/* منوی تمام‌صفحه موبایل */}
+      {/* کشوی منوی تمام‌صفحه موبایل با تم ادیتوریال و گرم */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -255,43 +244,34 @@ export function Header() {
             initial={{ clipPath: `circle(0% ${CLIP_ORIGIN})` }}
             animate={{ clipPath: `circle(150% ${CLIP_ORIGIN})` }}
             exit={{ clipPath: `circle(0% ${CLIP_ORIGIN})` }}
-            transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-40 flex flex-col overflow-y-auto px-6 pb-8 pt-28 sm:px-10 md:hidden"
-            style={{ backgroundColor: "#1E1B24" }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-40 flex flex-col justify-between bg-[var(--color-bg)] px-7 pb-10 pt-28 sm:px-10 md:hidden"
           >
-            {/* هاله‌های رنگی */}
-            <div className="pointer-events-none absolute -left-24 top-1/4 h-72 w-72 rounded-full bg-[#9B87F5] opacity-30 blur-3xl" />
-            <div className="pointer-events-none absolute -right-20 bottom-10 h-64 w-64 rounded-full bg-[#F0ABFC] opacity-20 blur-3xl" />
-
-            <nav className="relative flex flex-col">
+            <nav className="relative flex flex-col divide-y divide-[var(--color-border)]">
               {links.map((l, i) => (
                 <motion.a
                   key={l.id}
                   href={`#${l.id}`}
                   onClick={(e) => goTo(e, l.id)}
-                  initial={{ opacity: 0, x: 40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20, transition: { duration: 0.2 } }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10, transition: { duration: 0.15 } }}
                   transition={{
-                    delay: 0.3 + i * 0.08,
-                    duration: 0.5,
-                    ease: [0.22, 1, 0.36, 1],
+                    delay: 0.2 + i * 0.08,
+                    duration: 0.4,
+                    ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="group flex items-center gap-4 border-b border-white/10 py-5"
+                  className="group flex items-center justify-between py-5 text-[var(--color-text)]"
                 >
-                  <span
-                    className="w-4 text-sm font-bold"
-                    style={{ color: "var(--color-accent)" }}
-                  >
-                    {toFa(i + 1)}
-                  </span>
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-white ring-1 ring-white/10 transition-colors group-hover:bg-[#9B87F5]">
-                    <l.Icon className="h-5 w-5" />
-                  </span>
-                  <span className="text-3xl font-black text-white sm:text-4xl">
-                    {l.label}
-                  </span>
-                  <ArrowLeft className="ms-auto h-5 w-5 text-white/30 transition-all group-hover:-translate-x-1 group-hover:text-white" />
+                  <div className="flex items-center gap-4">
+                    <span className="font-mono text-xs text-[var(--color-accent)]">
+                      {toFa(i + 1).padStart(2, "۰")}
+                    </span>
+                    <span className="text-2xl font-bold tracking-tight">
+                      {l.label}
+                    </span>
+                  </div>
+                  <ArrowLeft className="h-5 w-5 text-muted-foreground transition-transform group-hover:-translate-x-1 group-hover:text-[var(--color-accent)]" />
                 </motion.a>
               ))}
             </nav>
@@ -299,34 +279,35 @@ export function Header() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, transition: { duration: 0.15 } }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="relative mt-auto pt-12"
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.45, duration: 0.4 }}
+              className="space-y-6 pt-8 border-t border-[var(--color-border)]"
             >
-              <p className="mb-4 text-xs text-white/40">راه‌های ارتباطی</p>
-              <div className="mb-6 flex flex-col gap-3 text-sm text-white/80">
-                <a
-                  href={`tel:${PHONE}`}
-                  className="flex items-center gap-3 hover:text-white"
-                >
-                  <Phone
-                    className="h-4 w-4"
-                    style={{ color: "var(--color-accent)" }}
-                  />
-                  <span dir="ltr">۰۹۳۵ ۱۴۶ ۵۷۸۰</span>
-                </a>
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="flex items-center gap-3 break-all hover:text-white"
-                >
-                  <Mail
-                    className="h-4 w-4 shrink-0"
-                    style={{ color: "var(--color-accent)" }}
-                  />
-                  {EMAIL}
-                </a>
+              <div className="space-y-2 text-sm">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  کانال‌های مستقیم
+                </p>
+                <div className="flex flex-col gap-2">
+                  <a
+                    href={`tel:${PHONE}`}
+                    className="flex items-center gap-2.5 text-[var(--color-text)] hover:text-[var(--color-accent)]"
+                  >
+                    <Phone className="h-4 w-4 text-[var(--color-accent)]" />
+                    <span dir="ltr" className="font-mono text-xs">
+                      ۰۹۳۵ ۱۴۶ ۵۷۸۰
+                    </span>
+                  </a>
+                  <a
+                    href={`mailto:${EMAIL}`}
+                    className="flex items-center gap-2.5 text-xs text-[var(--color-text)] hover:text-[var(--color-accent)]"
+                  >
+                    <Mail className="h-4 w-4 text-[var(--color-accent)]" />
+                    <span className="font-mono">{EMAIL}</span>
+                  </a>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-3">
+
+              <div className="flex items-center gap-3">
                 {socials.map((s) => {
                   const external = s.href.startsWith("http");
                   return (
@@ -334,10 +315,9 @@ export function Header() {
                       key={s.label}
                       href={s.href}
                       aria-label={s.label}
-                      title={s.label}
                       target={external ? "_blank" : undefined}
                       rel={external ? "noopener noreferrer" : undefined}
-                      className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-white ring-1 ring-white/10 transition-all hover:-translate-y-1 hover:bg-[#9B87F5]"
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-text)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
                     >
                       <s.Icon className="h-4 w-4" />
                     </a>

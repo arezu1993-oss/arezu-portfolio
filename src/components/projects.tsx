@@ -1,377 +1,234 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
-import { FiGithub, FiExternalLink, FiArrowUpRight } from "react-icons/fi";
 import Image from "next/image";
+import {
+  ArrowUpRight,
+  Code,
+  GitBranch,
+  Target,
+  CheckCircle2,
+  Layers,
+} from "lucide-react";
 
-// ===== تایپ‌ها =====
-interface Project {
+interface CaseStudy {
+  id: string;
   title: string;
-  description: string;
+  category: string;
+  year: string;
+  problem: string;
+  solution: string;
   image: string;
   tags: string[];
   github?: string;
   demo?: string;
-  category: string;
 }
 
-// ===== دیتای پروژه‌ها =====
-const projects: Project[] = [
+const caseStudies: CaseStudy[] = [
   {
-    title: "پلتفرم شیمی گستر سولفات",
-    description:
-      "سایت B2B تأمین و فروش مواد شیمیایی صنعتی با کاتالوگ محصول، سیستم استعلام آنلاین و بخش مشاوره تخصصی.",
+    id: "shimi-gostar",
+    title: "پلتفرم B2B شیمی گستر",
+    category: "معماری داده و پرفورمنس",
+    year: "۱۴۰۴",
+    problem:
+      "لود سنگین کاتالوگ‌های صنعتی و نیاز مشتریان سازمانی به یک رابط کاربری خلوت برای استعلام سریع بدون سردرگمی.",
+    solution:
+      "پیاده‌سازی معماری تمیز با Next.js، بهینه‌سازی رندرینگ برای لود زیر یک ثانیه و طراحی مسیر کاربری مینیمال.",
     image: "/images/project1.png",
-    tags: ["Next.js", "TypeScript"],
-    category: "وب‌سایت تجاری",
+    tags: ["Next.js", "TypeScript", "Tailwind CSS"],
     github: "https://github.com/yourusername/shimi-gostar",
     demo: "https://shimigostarsulfate.com",
   },
   {
-    title: "سایت الفیکس - دکتر شادمانی",
-    description:
-      "لندینگ‌پیج تخصصی عیب‌یابی و تعمیر ECU و بردهای الکترونیکی ماشین‌آلات سنگین با معرفی سوابق علمی و نمونه‌کارها.",
+    id: "elefix",
+    title: "لندینگ‌پیج الفیکس",
+    category: "تعامل و انیمیشن (UI/UX)",
+    year: "۱۴۰۴",
+    problem:
+      "انتقال حس تخصص و مهندسیِ دقیق در تعمیرات ECU خودرو به مخاطب، در قالب یک تک‌صفحه روان و جذاب برای موبایل.",
+    solution:
+      "استفاده از Framer Motion برای خلق اسکرول ۶۰ فریم بر ثانیه و انیمیشن‌های کنترل‌شده که هویت کارگاهی را بازتاب می‌دهد.",
     image: "/images/project2.png",
-    tags: ["Next.js", "Framer Motion"],
-    category: "لندینگ پیج",
+    tags: ["React", "Framer Motion", "Tailwind CSS"],
     github: "https://github.com/yourusername/elefix",
     demo: "https://elefix.netlify.app",
   },
   {
-    title: "پورتفولیو آرزو",
-    description:
-      "وب‌سایت شخصی با طراحی مینیمال و انیمیشن‌های ظریف، شامل نمایش پروژه‌ها، تجربیات و مهارت‌ها با جدیدترین تکنولوژی‌ها.",
+    id: "portfolio",
+    title: "پورتفولیو شخصی آرزو",
+    category: "توسعه فرانت‌اند و ادیتوریال",
+    year: "۱۴۰۵",
+    problem:
+      "تلفیق ۸ سال سابقه در نشر و توزیع کتاب با مهارت‌های مدرن توسعه وب، بدون افتادن در دام قالب‌های تکراری.",
+    solution:
+      "خلق یک هویت بصری ادیتوریال بر پایه رنگ‌های سنگی و عاجی، و پیاده‌سازی گرید ژورنالی با حداقل وابستگی به کتابخانه‌ها.",
     image: "/images/project3.png",
-    tags: ["Next.js 15", "TypeScript"],
-    category: "پورتفولیو شخصی",
+    tags: ["Next.js 15", "TypeScript", "Tailwind v4"],
     github: "https://github.com/yourusername/portfolio",
     demo: "#",
   },
 ];
 
-// ===== کامپوننت کارت پروژه =====
-const ProjectCard = ({
-  project,
-  index,
-}: {
-  project: Project;
-  index: number;
-}) => {
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.1,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      className="group relative"
-    >
-      {/* کارت با Magazine Design */}
-      <motion.div
-        className="relative rounded-[2rem] overflow-hidden bg-white
-                   shadow-[0_8px_30px_rgba(155,135,245,0.12)]
-                   transition-all duration-500"
-        whileHover={{
-          y: -8,
-          boxShadow: "0 20px 50px rgba(155,135,245,0.25)",
-          transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
-        }}
-      >
-        {/* Image Container - 16:9 Aspect Ratio */}
-        <div
-          className="relative w-full overflow-hidden bg-[oklch(96%_0.01_280)]"
-          style={{ aspectRatio: "16 / 9" }}
-        >
-          {/* Corner Category Badge */}
-          <div className="absolute top-4 right-4 z-20">
-            <motion.div
-              className="px-3 py-1.5 rounded-full
-                         bg-white/95 backdrop-blur-sm
-                         border border-[oklch(72%_0.14_290)]/20
-                         shadow-lg"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 + 0.2 }}
-            >
-              <span className="text-xs font-bold text-[oklch(72%_0.14_290)]">
-                {project.category}
-              </span>
-            </motion.div>
-          </div>
-
-          {/* تصویر با Zoom Subtle */}
-          <motion.div
-            className="relative w-full h-full"
-            whileHover={{
-              scale: 1.05,
-              transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-            }}
-          >
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              unoptimized
-            />
-          </motion.div>
-        </div>
-
-        {/* Content Area - Stacked Below Image */}
-        <div className="p-6 space-y-4">
-          {/* تگ‌ها */}
-          <motion.div
-            className="flex flex-wrap gap-2"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.3 }}
-          >
-            {project.tags.slice(0, 2).map((tag) => (
-              <Badge
-                key={tag}
-                className="px-3 py-1 text-xs font-semibold
-                         bg-[oklch(72%_0.14_290)]/10
-                         border border-[oklch(72%_0.14_290)]/20
-                         text-[oklch(72%_0.14_290)]
-                         hover:bg-[oklch(72%_0.14_290)]/20
-                         transition-all duration-300"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </motion.div>
-
-          {/* تایتل */}
-          <motion.h3
-            className="text-2xl font-black text-[oklch(20%_0.02_280)] leading-tight"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.4 }}
-          >
-            {project.title}
-          </motion.h3>
-
-          {/* توضیحات */}
-          <motion.p
-            className="text-base text-[oklch(45%_0.02_280)] leading-relaxed line-clamp-3"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.5 }}
-          >
-            {project.description}
-          </motion.p>
-
-          {/* دکمه‌های Action */}
-          <motion.div
-            className="flex gap-3 pt-2"
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.6 }}
-          >
-            {project.demo && (
-              <motion.a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl
-                         bg-gradient-to-r from-[oklch(72%_0.14_290)] to-[oklch(80%_0.12_310)]
-                         text-white font-bold text-sm
-                         shadow-[0_4px_14px_rgba(155,135,245,0.4)]
-                         hover:shadow-[0_6px_20px_rgba(155,135,245,0.5)]
-                         transition-all duration-300"
-              >
-                <span>مشاهده پروژه</span>
-                <FiArrowUpRight className="text-lg" />
-              </motion.a>
-            )}
-            {project.github && (
-              <motion.a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl
-                         bg-[oklch(96%_0.01_280)]
-                         border border-[oklch(72%_0.14_290)]/20
-                         text-[oklch(72%_0.14_290)] font-bold text-sm
-                         hover:bg-[oklch(72%_0.14_290)]/10
-                         hover:border-[oklch(72%_0.14_290)]/40
-                         transition-all duration-300"
-                aria-label="GitHub"
-              >
-                <FiGithub className="text-xl" />
-              </motion.a>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Decorative Corner Accent */}
-        <div className="absolute bottom-0 left-0 w-20 h-20 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity duration-500">
-          <div className="absolute inset-0 bg-gradient-to-tr from-[oklch(72%_0.14_290)] to-transparent rounded-tr-full" />
-        </div>
-      </motion.div>
-    </motion.article>
-  );
-};
-
-// ===== کامپوننت اصلی Projects =====
-export default function Projects() {
+export default function ProjectsSection() {
   return (
     <section
-      className="relative py-24 px-4 overflow-hidden 
-                 bg-gradient-to-b from-white via-[oklch(99%_0.01_290)] to-white"
       id="projects"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-stone-200/80 dark:border-stone-800/80"
     >
-      {/* Artistic Background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Grid Pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `radial-gradient(circle, oklch(72% 0.14 290) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-
-        {/* Floating Blobs */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full blur-[120px]"
-          style={{
-            background:
-              "radial-gradient(circle, oklch(72% 0.14 290 / 0.08), transparent 70%)",
-          }}
-          animate={{
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px]"
-          style={{
-            background:
-              "radial-gradient(circle, oklch(94% 0.04 340 / 0.08), transparent 70%)",
-          }}
-          animate={{
-            x: [0, -20, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.15, 1],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+      {/* هدر بخش - استایل کیس استادی */}
+      <div className="mb-20 space-y-4 max-w-2xl">
+        <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-wider text-stone-500 dark:text-stone-400 uppercase">
+          <Layers className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+          <span>Case Studies & Execution</span>
+        </div>
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
+          مسئله‌ها و{" "}
+          <span className="text-amber-700 dark:text-amber-500">
+            راه‌حل‌های مهندسی
+          </span>
+        </h2>
+        <p className="text-sm sm:text-base text-stone-600 dark:text-stone-400 leading-relaxed">
+          فراتر از زیبایی بصری، هر پروژه یک چالش فنی و کاربری داشته است. در
+          اینجا بررسی می‌کنیم که چگونه با ابزارهای مدرن وب، این چالش‌ها به
+          راه‌حل تبدیل شده‌اند.
+        </p>
       </div>
 
-      {/* Container */}
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header - Elegant & Minimal */}
-        <motion.div
-          className="text-center mb-16 space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      {/* لیست پروژه‌ها (چیدمان متناوب در دسکتاپ) */}
+      <div className="space-y-24 lg:space-y-32">
+        {caseStudies.map((project, idx) => {
+          const isEven = idx % 2 === 0;
+
+          return (
+            <motion.article
+              key={project.id}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className={`flex flex-col gap-8 lg:gap-16 items-center ${
+                isEven ? "lg:flex-row" : "lg:flex-row-reverse"
+              }`}
+            >
+              {/* بخش تصویر (موکاپ/فریم) */}
+              <div className="w-full lg:w-1/2">
+                <div className="relative aspect-[4/3] w-full rounded-2xl bg-stone-100/50 dark:bg-stone-900/30 border border-stone-200/80 dark:border-stone-800 p-2 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="relative w-full h-full rounded-xl overflow-hidden bg-stone-200 dark:bg-stone-800">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover object-top hover:scale-105 transition-transform duration-700 ease-in-out"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      unoptimized
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* بخش توضیحات کیس‌استادی */}
+              <div className="w-full lg:w-1/2 space-y-8">
+                {/* تگ سال و دسته‌بندی */}
+                <div className="flex items-center gap-3 font-mono text-xs">
+                  <span className="px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700">
+                    {project.year}
+                  </span>
+                  <span className="text-amber-700 dark:text-amber-500 font-bold tracking-tight">
+                    {project.category}
+                  </span>
+                </div>
+
+                {/* عنوان */}
+                <h3 className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-stone-100">
+                  {project.title}
+                </h3>
+
+                {/* بلوک چالش و راهکار */}
+                <div className="space-y-5">
+                  {/* چالش */}
+                  <div className="flex gap-3">
+                    <Target className="w-5 h-5 text-stone-400 dark:text-stone-500 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-bold text-stone-900 dark:text-stone-200 mb-1">
+                        صورت مسئله:
+                      </h4>
+                      <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                        {project.problem}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* راهکار */}
+                  <div className="flex gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-bold text-stone-900 dark:text-stone-200 mb-1">
+                        راهکار اجرایی:
+                      </h4>
+                      <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                        {project.solution}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* تگ‌های فنی */}
+                <div dir="ltr" className="flex flex-wrap gap-2 pt-2">
+                  {project.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] font-mono px-3 py-1.5 rounded-lg bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-800 shadow-2xs"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* دکمه‌های اکشن */}
+                <div className="flex items-center gap-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+                  {project.demo && (
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 text-sm font-bold hover:bg-amber-800 dark:hover:bg-amber-500 dark:hover:text-stone-900 transition-colors shadow-sm"
+                    >
+                      <span>مشاهده خروجی</span>
+                      <ArrowUpRight className="w-4 h-4" />
+                    </a>
+                  )}
+
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-transparent text-stone-700 dark:text-stone-300 text-sm font-mono hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors border border-transparent hover:border-stone-200 dark:hover:border-stone-700"
+                    >
+                      <Code className="w-4 h-4" />
+                      <span dir="ltr">Code</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </motion.article>
+          );
+        })}
+      </div>
+
+      {/* پی‌نوشت انتهای بخش */}
+      <div className="mt-24 pt-8 border-t border-dashed border-stone-200 dark:border-stone-800 text-center">
+        <a
+          href="https://github.com/yourusername"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-stone-600 dark:text-stone-400 hover:text-amber-700 dark:hover:text-amber-400 transition-colors font-medium text-sm"
         >
-          {/* Decorative Line Top */}
-          <motion.div
-            className="flex items-center justify-center gap-4 mb-6"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.div
-              className="h-[2px] w-16 bg-gradient-to-r from-transparent via-[oklch(72%_0.14_290)] to-[oklch(72%_0.14_290)]"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
-            <div className="w-2 h-2 rounded-full bg-[oklch(72%_0.14_290)]" />
-            <motion.div
-              className="h-[2px] w-16 bg-gradient-to-l from-transparent via-[oklch(94%_0.04_340)] to-[oklch(94%_0.04_340)]"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
-          </motion.div>
-
-          {/* Title */}
-          <div className="space-y-4">
-            <h2 className="text-5xl md:text-6xl font-black text-[oklch(18%_0.02_280)] leading-tight">
-              نمونه‌کارها
-            </h2>
-
-            {/* Subtitle */}
-            <p className="text-lg text-[oklch(45%_0.02_280)] max-w-2xl mx-auto leading-relaxed">
-              مجموعه‌ای از پروژه‌های منتخب که با دقت و خلاقیت ساخته شده‌اند
-            </p>
-          </div>
-
-          {/* Decorative Line Bottom */}
-          <motion.div
-            className="h-1 w-24 mx-auto rounded-full bg-gradient-to-r from-[oklch(72%_0.14_290)] to-[oklch(94%_0.04_340)]"
-            initial={{ scaleX: 0, opacity: 0 }}
-            whileInView={{ scaleX: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          />
-        </motion.div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard key={project.title} project={project} index={index} />
-          ))}
-        </div>
-
-        {/* CTA - Minimal */}
-        <motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <motion.a
-            href="https://github.com/yourusername"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-3 px-10 py-4 rounded-full
-                     bg-gradient-to-r from-[oklch(72%_0.14_290)] to-[oklch(80%_0.12_310)]
-                     text-white font-bold text-base
-                     shadow-[0_10px_40px_rgba(155,135,245,0.3)]
-                     hover:shadow-[0_15px_50px_rgba(155,135,245,0.4)]
-                     transition-all duration-300
-                     relative overflow-hidden group"
-          >
-            {/* Shimmer Effect */}
-            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-
-            <FiGithub className="text-xl relative z-10" />
-            <span className="relative z-10">مشاهده تمام پروژه‌ها</span>
-            <FiExternalLink className="text-lg relative z-10" />
-          </motion.a>
-        </motion.div>
+          <GitBranch className="w-4 h-4" />
+          <span>مشاهده سایر پروژه‌ها در گیت‌هاب</span>
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </a>
       </div>
     </section>
   );

@@ -1,61 +1,68 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import React, { useState, type FormEvent } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { FiArrowLeft, FiCheck, FiLock, FiMail, FiPhone } from "react-icons/fi";
-import { FaTelegramPlane } from "react-icons/fa";
+import {
+  ArrowLeft,
+  Check,
+  Copy,
+  Mail,
+  Phone,
+  Send,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
-// ===== اطلاعات تماس =====
+// اطلاعات تماس
 const EMAIL = "arezufrontend.developer@gmail.com";
 
 const channels = [
   {
-    icon: FiPhone,
-    label: "تماس تلفنی",
+    icon: Phone,
+    label: "تماس تلفنی مستقیم",
     value: "۰۹۳۵ ۱۴۶ ۵۷۸۰",
     href: "tel:+989351465780",
     ltr: true,
   },
   {
-    icon: FiMail,
-    label: "ایمیل",
+    icon: Mail,
+    label: "آدرس ایمیل",
     value: EMAIL,
     href: `mailto:${EMAIL}`,
     ltr: true,
+    copyable: true,
   },
   {
-    icon: FaTelegramPlane,
-    label: "تلگرام",
-    value: "پیام مستقیم",
+    icon: Send,
+    label: "ارتباط در تلگرام",
+    value: "پیام مستقیم به تلگرام",
     href: "https://t.me/+989351465780",
     ltr: false,
   },
 ];
 
-// ===== نوع پروژه =====
+// دسته‌بندی پروژه‌ها
 const projectTypes = [
-  "سایت شرکتی",
-  "فروشگاه آنلاین",
-  "پلتفرم و داشبورد",
-  "پورتفولیو",
-  "سایر",
+  "سایت شرکتی و B2B",
+  "لندینگ‌پیج تعاملی",
+  "طراحی هویت بصری وب",
+  "داشبورد و پلتفرم",
+  "مشاوره و بازطراحی",
 ];
 
-// ===== انیمیشن ورود =====
-// منحنی easeOutQuint؛ as const تا تایپ آن tuple بماند نه number[]
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 20 },
   show: (i: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay: i * 0.08, ease: EASE },
+    transition: { duration: 0.5, delay: i * 0.08, ease: EASE },
   }),
 };
 
-// ===== فیلد با لیبل شناور =====
-function Field({
+// فیلد با لیبل شناور مینیمال و سنگی
+function MinimalField({
   id,
   label,
   value,
@@ -70,8 +77,8 @@ function Field({
   multiline?: boolean;
   type?: string;
 }) {
-  const base =
-    "peer w-full rounded-2xl border border-[oklch(90%_0.02_290)] bg-white/70 px-5 pb-3 pt-7 text-[oklch(22%_0.02_280)] outline-none transition-[border-color,box-shadow,background-color] duration-300 placeholder:text-transparent focus:border-[oklch(72%_0.14_290)] focus:bg-white focus:shadow-[0_0_0_4px_oklch(72%_0.14_290/0.12)]";
+  const baseClasses =
+    "peer w-full rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/60 dark:bg-stone-900/60 px-4 pb-3.5 pt-6 text-sm text-stone-900 dark:text-stone-100 outline-none transition-all duration-300 placeholder:text-transparent focus:border-amber-600 focus:bg-white dark:focus:bg-stone-900 focus:ring-4 focus:ring-amber-600/10";
 
   return (
     <div className="relative">
@@ -83,7 +90,7 @@ function Field({
           placeholder={label}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`${base} resize-none`}
+          className={`${baseClasses} resize-none`}
         />
       ) : (
         <input
@@ -93,13 +100,12 @@ function Field({
           placeholder={label}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={base}
+          className={baseClasses}
         />
       )}
-      {/* لیبل وقتی فیلد خالی است وسط می‌نشیند و با فوکوس بالا می‌رود */}
       <label
         htmlFor={id}
-        className="pointer-events-none absolute right-5 top-2.5 text-xs font-bold text-[oklch(55%_0.10_290)] transition-all duration-300 peer-placeholder-shown:top-[1.15rem] peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-[oklch(45%_0.02_280)] peer-focus:top-2.5 peer-focus:text-xs peer-focus:font-bold peer-focus:text-[oklch(55%_0.10_290)]"
+        className="pointer-events-none absolute right-4 top-2 text-[11px] font-bold text-stone-600 dark:text-stone-400 transition-all duration-300 peer-placeholder-shown:top-4 peer-placeholder-shown:text-xs peer-placeholder-shown:font-normal peer-placeholder-shown:text-stone-500 peer-focus:top-2 peer-focus:text-[11px] peer-focus:font-bold peer-focus:text-amber-700 dark:peer-focus:text-amber-400"
       >
         {label}
       </label>
@@ -113,12 +119,20 @@ export default function Contact() {
   const [reach, setReach] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  // فعلاً بک‌اند نداریم؛ پیام آماده در برنامه‌ی ایمیل کاربر باز می‌شود
+  const handleCopyEmail = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(EMAIL);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const subject = `درخواست پروژه: ${type}`;
-    const body = `نام: ${name}\nراه ارتباطی: ${reach}\nنوع پروژه: ${type}\n\n${message}`;
+    const subject = `درخواست همکاری پروژه: ${type}`;
+    const body = `سلام آرزو،\n\nنام: ${name}\nراه ارتباطی: ${reach}\nنوع پروژه: ${type}\n\nتوضیحات:\n${message}\n`;
     window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSent(true);
   };
@@ -135,178 +149,193 @@ export default function Contact() {
     <section
       id="contact"
       dir="rtl"
-      className="relative overflow-hidden bg-gradient-to-b from-white via-[oklch(97%_0.015_290)] to-[oklch(96%_0.025_320)] py-24 md:py-32"
+      className="relative overflow-hidden bg-white dark:bg-stone-950 py-24 sm:py-32 border-t border-stone-200/80 dark:border-stone-800/80"
     >
-      {/* نورهای ملایم پس‌زمینه */}
+      {/* بافت نور محیطی بسیار محو و کلاسیک */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-32 top-10 h-96 w-96 rounded-full bg-[oklch(72%_0.14_290)] opacity-20 blur-[120px]" />
-        <div className="absolute -left-24 bottom-0 h-96 w-96 rounded-full bg-[oklch(85%_0.08_340)] opacity-30 blur-[120px]" />
-        {/* شبکه‌ی نقطه‌ای ظریف */}
-        <div className="absolute inset-0 bg-[radial-gradient(oklch(72%_0.14_290/0.18)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
+        <div className="absolute right-0 top-1/4 h-96 w-96 rounded-full bg-amber-600/5 blur-3xl" />
+        <div className="absolute left-10 bottom-10 h-80 w-80 rounded-full bg-stone-500/5 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-14 px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
-        {/* ===== ستون متن ===== */}
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          <motion.span
-            variants={fadeUp}
-            className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-1.5 text-sm font-bold text-[oklch(55%_0.12_290)] shadow-sm ring-1 ring-[oklch(72%_0.14_290/0.2)]"
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16 items-start">
+          {/* ستون متن و اطلاعات تماس (عرض ۵ ستون در دسکتاپ) */}
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="lg:col-span-5 space-y-8"
           >
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-            </span>
-            پذیرش پروژه‌ی جدید
-          </motion.span>
-
-          <motion.h2
-            variants={fadeUp}
-            custom={1}
-            className="mt-6 text-4xl font-black leading-[1.35] text-[oklch(21%_0.02_280)] md:text-5xl"
-          >
-            بریم یه چیز
-            <br />
-            <span className="relative inline-block text-[oklch(62%_0.15_290)]">
-              خاص بسازیم
-              {/* خط دست‌نویس زیر کلمه */}
-              <svg
-                aria-hidden
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-                className="absolute -bottom-2 right-0 h-3 w-full text-[oklch(85%_0.08_340)]"
-              >
-                <motion.path
-                  d="M2 8 Q 50 2, 100 7 T 198 5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  whileInView={{ pathLength: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1, delay: 0.5, ease: "easeInOut" }}
-                />
-              </svg>
-            </span>
-          </motion.h2>
-
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            className="mt-6 max-w-md text-lg leading-8 text-[oklch(44%_0.02_280)]"
-          >
-            چند خط از ایده‌ت بنویس؛ بقیه‌ش رو با هم جلو می‌بریم.
-          </motion.p>
-
-          {/* کارت‌های راه ارتباطی */}
-          <div className="mt-10 grid gap-3">
-            {channels.map(({ icon: Icon, label, value, href, ltr }, i) => (
-              <motion.a
-                key={label}
-                href={href}
-                target={href.startsWith("http") ? "_blank" : undefined}
-                rel="noopener noreferrer"
-                variants={fadeUp}
-                custom={3 + i}
-                className="group flex items-center gap-4 rounded-2xl border border-white bg-white/60 p-4 backdrop-blur-md transition-[background-color,box-shadow] duration-300 hover:bg-white hover:shadow-[0_14px_34px_-14px_oklch(55%_0.12_290/0.35)]"
-              >
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[oklch(72%_0.14_290)] to-[oklch(80%_0.10_330)] text-lg text-white shadow-md">
-                  <Icon />
+            {/* نشانگر پذیرش پروژه */}
+            <motion.div variants={fadeUp}>
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono tracking-wider text-amber-900 dark:text-amber-300 bg-amber-500/10 border border-amber-600/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-500 opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-600" />
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-xs text-[oklch(45%_0.02_280)]">
-                    {label}
-                  </span>
-                  <span
-                    dir={ltr ? "ltr" : undefined}
-                    className="block truncate text-right font-bold text-[oklch(22%_0.02_280)]"
+                <span>آماده پذیرش پروژه‌های منتخب</span>
+              </span>
+            </motion.div>
+
+            {/* تیتر ادیتوریال */}
+            <motion.div variants={fadeUp} custom={1} className="space-y-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
+                بیایید با هم اثری{" "}
+                <span className="relative inline-block text-amber-800 dark:text-amber-500">
+                  ماندگار بسازیم
+                  {/* خط دست‌نویس با ظرافت و هارمونی کهربایی */}
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 200 12"
+                    preserveAspectRatio="none"
+                    className="absolute -bottom-2 right-0 h-2.5 w-full text-amber-700/40 dark:text-amber-500/40"
                   >
-                    {value}
-                  </span>
+                    <motion.path
+                      d="M2 8 Q 50 2, 100 7 T 198 5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0 }}
+                      whileInView={{ pathLength: 1 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.9,
+                        delay: 0.4,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  </svg>
                 </span>
-                <FiArrowLeft className="text-[oklch(62%_0.15_290)] opacity-0 transition-all duration-300 group-hover:-translate-x-1 group-hover:opacity-100" />
-              </motion.a>
-            ))}
-          </div>
-        </motion.div>
+              </h2>
 
-        {/* ===== کارت فرم ===== */}
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7, delay: 0.15, ease: EASE }}
-          className="relative"
-        >
-          {/* حاشیه‌ی گرادیانی */}
-          <div className="rounded-[1.75rem] bg-gradient-to-br from-[oklch(72%_0.14_290/0.6)] via-white to-[oklch(85%_0.08_340/0.7)] p-px shadow-[0_40px_80px_-30px_oklch(50%_0.12_290/0.35)]">
-            <div className="relative overflow-hidden rounded-[calc(1.75rem-1px)] bg-white/85 p-6 backdrop-blur-xl md:p-10">
+              <p className="text-sm sm:text-base text-stone-600 dark:text-stone-400 leading-relaxed font-normal pt-2">
+                اگر ایده‌ای دارید، یا به دنبال معماری وب‌سایتی با استاندارد
+                بالا، سرعت عالی و روحی مینیمال هستید، کافی است جزئیاتی از آن را
+                بنویسید.
+              </p>
+            </motion.div>
+
+            {/* کارت‌های مینیمال مسیرهای تماس */}
+            <div className="space-y-3 pt-2">
+              {channels.map(
+                ({ icon: Icon, label, value, href, ltr, copyable }, i) => (
+                  <motion.div
+                    key={label}
+                    variants={fadeUp}
+                    custom={2 + i}
+                    className="group relative flex items-center justify-between rounded-2xl border border-stone-200/90 dark:border-stone-800/90 bg-stone-50/50 dark:bg-stone-900/40 p-4 transition-all duration-300 hover:border-amber-600/30 hover:bg-white dark:hover:bg-stone-900 hover:shadow-xs"
+                  >
+                    <a
+                      href={href}
+                      target={href.startsWith("http") ? "_blank" : undefined}
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3.5 flex-1 min-w-0"
+                    >
+                      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+                        <Icon className="w-4 h-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="block text-[11px] font-medium text-stone-600 dark:text-stone-400">
+                          {label}
+                        </span>
+                        <span
+                          dir={ltr ? "ltr" : undefined}
+                          className="block truncate text-xs sm:text-sm font-bold text-stone-900 dark:text-stone-200 text-right mt-0.5"
+                        >
+                          {value}
+                        </span>
+                      </div>
+                    </a>
+
+                    {/* دکمه اختصاصی کپی ایمیل برای ارتقای UX */}
+                    {copyable ? (
+                      <button
+                        type="button"
+                        onClick={handleCopyEmail}
+                        aria-label="کپی آدرس ایمیل"
+                        className="ml-1 p-2 rounded-lg text-stone-600 dark:text-stone-400 hover:text-amber-800 dark:hover:text-amber-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                      >
+                        {copied ? (
+                          <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </button>
+                    ) : (
+                      <ArrowLeft className="w-4 h-4 text-stone-600 dark:text-stone-400 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                    )}
+                  </motion.div>
+                ),
+              )}
+            </div>
+          </motion.div>
+
+          {/* ستون کارت فرم تعاملی (عرض ۷ ستون در دسکتاپ) */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
+            className="lg:col-span-7"
+          >
+            <div className="rounded-3xl border border-stone-200/90 dark:border-stone-800/90 bg-white dark:bg-stone-900/60 p-6 sm:p-10 shadow-xs backdrop-blur-sm">
               <AnimatePresence mode="wait">
                 {sent ? (
-                  // ===== حالت موفقیت =====
+                  // حالت تایید سابمیت (Success State)
                   <motion.div
                     key="sent"
                     initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="flex min-h-[460px] flex-col items-center justify-center text-center"
+                    transition={{ duration: 0.3 }}
+                    className="flex min-h-[420px] flex-col items-center justify-center text-center px-4"
                   >
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 18,
-                        delay: 0.1,
-                      }}
-                      className="grid h-20 w-20 place-items-center rounded-full bg-gradient-to-br from-[oklch(72%_0.14_290)] to-[oklch(80%_0.10_330)] text-3xl text-white shadow-lg"
-                    >
-                      <FiCheck />
-                    </motion.span>
-                    <h3 className="mt-6 text-2xl font-black text-[oklch(21%_0.02_280)]">
-                      ممنون، {name || "دوست من"}!
+                    <div className="grid h-16 w-16 place-items-center rounded-2xl bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-600/20 mb-6">
+                      <Check className="w-8 h-8 stroke-[2.5]" />
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-black text-stone-900 dark:text-stone-100">
+                      پیش‌نویس پیام آماده شد، {name || "همراه عزیز"}!
                     </h3>
-                    <p className="mt-3 max-w-xs leading-7 text-[oklch(44%_0.02_280)]">
-                      پیامت توی برنامه‌ی ایمیلت آماده شد. فقط کافیه ارسالش کنی.
+                    <p className="mt-3 max-w-sm text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                      متن پیام به برنامه ایمیل شما منتقل شد. با فشردن دکمه Send
+                      در ایمیل، پیام شما مستقیماً به دست من می‌رسد.
                     </p>
                     <button
                       type="button"
                       onClick={reset}
-                      className="mt-8 text-sm font-bold text-[oklch(55%_0.12_290)] underline-offset-8 hover:underline"
+                      className="mt-8 text-xs font-bold text-amber-700 dark:text-amber-400 hover:text-amber-800 underline underline-offset-6 transition-colors"
                     >
-                      ارسال یه پیام دیگه
+                      ارسال پیامی دیگر
                     </button>
                   </motion.div>
                 ) : (
-                  // ===== فرم =====
+                  // فرم اصلی
                   <motion.form
                     key="form"
                     onSubmit={handleSubmit}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    exit={{ opacity: 0 }}
                     className="space-y-6"
                   >
-                    <div className="flex items-center justify-between gap-4">
-                      <h3 className="text-xl font-black text-[oklch(21%_0.02_280)]">
-                        درباره‌ی پروژه‌ت بگو
-                      </h3>
-                      <span className="hidden rounded-full bg-[oklch(96%_0.03_340)] px-3 py-1 text-xs font-bold text-[oklch(50%_0.12_340)] sm:inline">
-                        پاسخ در کمتر از ۲۴ ساعت
+                    <div className="flex items-center justify-between pb-2 border-b border-stone-100 dark:border-stone-800/80">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                        <h3 className="text-base sm:text-lg font-black text-stone-900 dark:text-stone-100">
+                          ثبت خلاصه پروژه
+                        </h3>
+                      </div>
+                      <span className="text-[11px] font-mono text-stone-600 dark:text-stone-300">
+                        پاسخ‌گویی معمولاً در ۲۴ ساعت
                       </span>
                     </div>
 
-                    {/* چیپ‌های نوع پروژه با نشانگر لغزان */}
-                    <fieldset>
-                      <legend className="mb-3 text-sm text-[oklch(44%_0.02_280)]">
-                        نوع پروژه
-                      </legend>
+                    {/* انتخاب دسته‌بندی پروژه با پیل‌های استودیویی */}
+                    <div className="space-y-2.5">
+                      <label className="block text-xs font-medium text-stone-600 dark:text-stone-400">
+                        حوزه و زمینه پروژه
+                      </label>
                       <div className="flex flex-wrap gap-2">
                         {projectTypes.map((t) => {
                           const active = t === type;
@@ -314,74 +343,79 @@ export default function Contact() {
                             <button
                               key={t}
                               type="button"
-                              aria-pressed={active}
                               onClick={() => setType(t)}
-                              className={`relative rounded-full px-4 py-2 text-sm font-bold transition-colors duration-300 ${
+                              className={`relative rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all duration-200 ${
                                 active
-                                  ? "text-white"
-                                  : "bg-[oklch(97%_0.01_290)] text-[oklch(40%_0.02_280)] ring-1 ring-[oklch(92%_0.02_290)] hover:text-[oklch(55%_0.12_290)]"
+                                  ? "text-stone-900 dark:text-stone-900 font-bold"
+                                  : "text-stone-600 dark:text-stone-400 bg-stone-100/70 dark:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100 border border-stone-200/60 dark:border-stone-700/60"
                               }`}
                             >
                               {active && (
                                 <motion.span
-                                  layoutId="type-pill"
+                                  layoutId="activePill"
                                   transition={{
                                     type: "spring",
-                                    stiffness: 400,
-                                    damping: 32,
+                                    stiffness: 380,
+                                    damping: 30,
                                   }}
-                                  className="absolute inset-0 rounded-full bg-gradient-to-l from-[oklch(68%_0.15_290)] to-[oklch(74%_0.12_320)] shadow-[0_8px_20px_-8px_oklch(60%_0.15_290/0.7)]"
+                                  className="absolute inset-0 rounded-xl bg-amber-400 shadow-xs"
                                 />
                               )}
-                              <span className="relative">{t}</span>
+                              <span className="relative z-10">{t}</span>
                             </button>
                           );
                         })}
                       </div>
-                    </fieldset>
+                    </div>
 
+                    {/* فیلدهای نام و ایمیل */}
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <Field
+                      <MinimalField
                         id="name"
-                        label="نام شما"
+                        label="نام شما / سازمان"
                         value={name}
                         onChange={setName}
                       />
-                      <Field
+                      <MinimalField
                         id="reach"
-                        label="ایمیل یا شماره تماس"
+                        label="شماره تماس یا ایمیل شما"
                         value={reach}
                         onChange={setReach}
                       />
                     </div>
-                    <Field
+
+                    {/* توضیحات پروژه */}
+                    <MinimalField
                       id="message"
-                      label="ایده‌ت رو در چند خط بنویس"
+                      label="خلاصه‌ای از ایده، اهداف یا نیازمندی‌ها بنویسید..."
                       value={message}
                       onChange={setMessage}
                       multiline
                     />
 
-                    <div className="flex flex-col-reverse items-center gap-4 pt-2 sm:flex-row sm:justify-between">
-                      <p className="flex items-center gap-2 text-xs text-[oklch(45%_0.02_280)]">
-                        <FiLock />
-                        اطلاعات شما محرمانه می‌مونه
-                      </p>
+                    {/* فوتر فرم و دکمه ارسال */}
+                    <div className="flex flex-col-reverse items-start gap-4 pt-3 sm:flex-row sm:items-center sm:justify-between border-t border-stone-100 dark:border-stone-800/80">
+                      <div className="flex items-center gap-1.5 text-[11px] text-stone-600 dark:text-stone-400">
+                        <ShieldCheck className="w-4 h-4 text-stone-600 dark:text-stone-300" />
+                        <span>اطلاعات شما محفوظ و خصوصی خواهد ماند</span>
+                      </div>
+
                       <motion.button
                         type="submit"
-                        whileTap={{ scale: 0.97 }}
-                        className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-l from-[oklch(66%_0.15_290)] to-[oklch(72%_0.13_320)] px-8 py-4 font-black text-white shadow-[0_16px_34px_-12px_oklch(58%_0.15_290/0.6)] transition-shadow duration-300 hover:shadow-[0_20px_44px_-10px_oklch(58%_0.15_290/0.75)] sm:w-auto"
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-stone-900 dark:bg-stone-100 px-7 py-3 text-xs sm:text-sm font-bold text-stone-100 dark:text-stone-900 shadow-sm transition-all duration-300 hover:bg-amber-800 dark:hover:bg-amber-400 sm:w-auto"
                       >
-                        ارسال پیام
-                        <FiArrowLeft className="transition-transform duration-300 group-hover:-translate-x-1" />
+                        <span>انتقال متن به ایمیل</span>
+                        <ArrowLeft className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1" />
                       </motion.button>
                     </div>
                   </motion.form>
                 )}
               </AnimatePresence>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
